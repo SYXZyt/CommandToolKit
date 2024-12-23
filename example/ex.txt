@@ -1,0 +1,4 @@
+sethealth value: float;
+moveto name: string x: float y: float;
+
+#This is a comment

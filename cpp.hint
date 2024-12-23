@@ -1,0 +1,9 @@
+// Hint files help the Visual Studio IDE interpret Visual C++ identifiers
+// such as names of functions and macros.
+// For more information see https://go.microsoft.com/fwlink/?linkid=865984
+#define CTX_API __declspec(dllexport)
+#define CTX_API __declspec(dllimport)
+#define CTX_API
+#define CTK_API __declspec(dllexport)
+#define CTK_API __declspec(dllimport)
+#define CTK_API
