@@ -20,7 +20,7 @@ ctkResult ctkManifestImpl::Load(ctkToken* tokens, size_t tokenCount)
 	while (current->type != ctkTokenType::NONE)
 	{
 		if (current->type == ctkTokenType::TOKENISE_ERROR)
-			return ctkMakeResult("Error tokenising manifest", ctkResult::CTK_TOKENISE_MANIFEST_ERROR);
+			return ctkMakeResult(current->lexeme.c_str(), ctkResult::CTK_TOKENISE_MANIFEST_ERROR);
 
 		if (current->type != ctkTokenType::IDENTIFIER)
 			return ctkMakeResult("Expected identifer for command name", ctkResult::CTK_PARSE_MANIFEST_ERROR);

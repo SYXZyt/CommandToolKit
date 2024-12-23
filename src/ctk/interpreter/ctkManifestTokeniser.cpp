@@ -47,6 +47,11 @@ std::vector<ctkToken>&& ctkManifestTokeniser::Tokenise()
 			tokens.push_back(CreateIdentifierToken());
 			continue;
 		}
+		else if (currentChar == '#')
+		{
+			while (currentChar != '\n' && currentChar != '\0')
+				Advance();
+		}
 		else if (currentChar == ',')
 		{
 			ctkToken token{};
