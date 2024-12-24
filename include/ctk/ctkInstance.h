@@ -14,7 +14,8 @@ typedef struct ctkInstance ctkInstance;
 /// @param instance The instance that called the command
 /// @param parameters The parameters passed to the command. Guarenteed to be the same count and types as defined in the manifest
 /// @param parameterCount The number of parameters passed to the command
-typedef ctkResult(*ctkCallback)(ctkInstance* instance, ctkValue* parameters, size_t parameterCount);
+/// @param userdata Any user data that was passed to the callback
+typedef ctkResult(*ctkCallback)(ctkInstance* instance, ctkValue* parameters, size_t parameterCount, void* userdata);
 
 /// @brief Create a new instance of the ctk library
 /// @return A pointer to the new instance
@@ -52,5 +53,17 @@ extern CTK_API ctkResult ctkRegisterCallback(ctkInstance* instance, const char* 
 /// @param cmdName The name of the command to remove. For example "help" will remove the help command if it has been loaded
 /// @return OK if the callback was successfully removed
 extern CTK_API ctkResult ctkUnregisterCallback(ctkInstance* instance, const char* cmdName);
+
+/// @brief Sets the user data which will be passed to the callback when it is called
+/// @param instance Which instance the callback is associated with
+/// @param key The name of the callback to associate the data with
+/// @param data The data to send to the callback
+extern CTK_API void ctkSetUserData(ctkInstance* instance, const char* key, void* data);
+
+/// @brief Retrieve the data which has been assigned to a callback
+/// @param instance Which instance the callback is associated with
+/// @param key The name of the callback to retrieve the data from
+/// @return A pointer to the data
+extern CTK_API void* ctkGetUserData(ctkInstance* instance, const char* key);
 
 CTK_END_C

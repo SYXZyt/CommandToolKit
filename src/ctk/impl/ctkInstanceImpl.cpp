@@ -33,6 +33,19 @@ ctkCallback ctkInstanceImpl::GetMatchingCallback(const ParseInfo& info)
 	return callback;
 }
 
+void ctkInstanceImpl::SetUserData(const char* key, void* data)
+{
+	userdata[key] = data;
+}
+
+void* ctkInstanceImpl::GetUserData(const char* key)
+{
+	if (userdata.count(key))
+		return userdata[key];
+
+	return nullptr;
+}
+
 ctkResult ctkInstanceImpl::RegisterCallback(const char* cmdName, ctkCallback callback)
 {
 	if (!cmdName || !callback)
@@ -121,7 +134,7 @@ ctkResult ctkInstanceImpl::ProcessCommand(const char* cmd)
 	if (!callback)
 		return ctkMakeResult("No matching command found", ctkResult::CTK_NO_MATHCHING_CALLBACK);
 
-	ctkResult res = callback(reinterpret_cast<ctkInstance*>(this), info.args.data(), info.args.size());
+	ctkResult res = callback(reinterpret_cast<ctkInstance*>(this), info.args.data(), info.args.size(), GetUserData(info.cmdName.c_str()));
 
 	//If the type is ok then we should our own success message, otherwise any other code indicates the user submitted their own message
 	if (res == ctkResult::CTK_OK)
