@@ -1,4 +1,4 @@
-#include <ctk/Interpreter/ctkCmdTokeniser.h>
+#include <ctk/impl/Interpreter/ctkCmdTokeniser.h>
 
 static bool IsIdentifierChar(char c)
 {
@@ -68,6 +68,22 @@ ctkToken ctkCmdTokeniser::CreateFloatToken()
 	std::string stringRepr;
 	int decimals = 0;
 
+	if (currentChar == '-')
+	{
+		stringRepr += currentChar;
+		Advance();
+
+		if (!IsNumeric(currentChar))
+		{
+			std::string message = std::string("Invalid float '") + stringRepr + "'";
+			ctkToken token{};
+			token.lexeme = ctkString(message.c_str());
+			token.type = ctkTokenType::TOKENISE_ERROR;
+			tokens.push_back(token);
+			return token;
+		}
+	}
+
 	do
 	{
 		if (currentChar == '.')
@@ -104,7 +120,7 @@ std::vector<ctkToken>&& ctkCmdTokeniser::Tokenise()
 			continue;
 		}
 
-		if (IsNumeric(currentChar))
+		if (IsNumeric(currentChar) || currentChar == '-')
 			tokens.push_back(CreateFloatToken());
 		else if (IsIdentifierChar(currentChar))
 			tokens.push_back(CreateIdentifierToken());

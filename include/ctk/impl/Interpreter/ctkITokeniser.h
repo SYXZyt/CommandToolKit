@@ -4,7 +4,7 @@
 
 #pragma once
 #include <vector>
-#include <ctk/Interpreter/ctkToken.h>
+#include <ctk/impl/Interpreter/ctkToken.h>
 #include <string>
 
 //Since both the cmd and manifest parsers and tokenisers use the same base, and just use a different tokenise check
