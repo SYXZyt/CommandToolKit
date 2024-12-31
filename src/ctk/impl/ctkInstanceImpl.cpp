@@ -2,6 +2,7 @@
 #include <ctk/impl/ctkInstanceImpl.h>
 #include <ctk/impl/ctkString.h>
 #include <ctk/impl/Interpreter/ctkCmdTokeniser.h>
+#include <algorithm>
 
 ctkCallback ctkInstanceImpl::GetMatchingCallback(const ParseInfo& info)
 {

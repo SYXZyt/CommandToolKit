@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <string>
 #include <ctk/ctkValue.h>
+#include <vector>
 
 class ctkInstanceImpl final
 {

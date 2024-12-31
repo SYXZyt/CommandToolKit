@@ -3,6 +3,7 @@
 /********************************************/
 
 #pragma once
+#include <stdlib.h>
 
 struct ctkString final
 {

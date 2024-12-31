@@ -24,4 +24,4 @@ if (WIN32)
 endif()
 
 target_include_directories(CTK PUBLIC include)
-add_compile_definitions(CTK PRIVATE -DCTK_EXPORT)
+target_compile_definitions(CTK PRIVATE -DCTK_EXPORT)

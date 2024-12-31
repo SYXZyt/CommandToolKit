@@ -4,6 +4,7 @@
 #include <ctk/ctkResult.h>
 #include <ctk/ctkType.h>
 #include <ctk/ctkValue.h>
+#include <stdlib.h>
 
 CTK_BEGIN_C
 
