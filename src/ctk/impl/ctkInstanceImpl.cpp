@@ -1,7 +1,7 @@
 #include <ctk/impl/ctkManifestImpl.h>
 #include <ctk/impl/ctkInstanceImpl.h>
 #include <ctk/impl/ctkString.h>
-#include <ctk/Interpreter/ctkCmdTokeniser.h>
+#include <ctk/impl/Interpreter/ctkCmdTokeniser.h>
 
 ctkCallback ctkInstanceImpl::GetMatchingCallback(const ParseInfo& info)
 {
@@ -46,6 +46,12 @@ void* ctkInstanceImpl::GetUserData(const char* key)
 	return nullptr;
 }
 
+void ctkInstanceImpl::RemoveUserData(const char* key)
+{
+	if (userdata.count(key))
+		userdata.erase(key);
+}
+
 ctkResult ctkInstanceImpl::RegisterCallback(const char* cmdName, ctkCallback callback)
 {
 	if (!cmdName || !callback)
@@ -84,9 +90,7 @@ ctkResult ctkInstanceImpl::ProcessCommand(const char* cmd)
 		});
 
 	if (it != tokens.end())
-	{
 		return ctkMakeResult(it->lexeme.c_str(), ctkResult::CTK_TOKENISE_CMD_ERROR);
-	}
 
 	ParseInfo info;
 
@@ -132,7 +136,7 @@ ctkResult ctkInstanceImpl::ProcessCommand(const char* cmd)
 	ctkCallback callback = GetMatchingCallback(info);
 
 	if (!callback)
-		return ctkMakeResult("No matching command found", ctkResult::CTK_NO_MATHCHING_CALLBACK);
+		return ctkMakeResult("No matching command found, or no callback found", ctkResult::CTK_NO_MATHCHING_CALLBACK);
 
 	ctkResult res = callback(reinterpret_cast<ctkInstance*>(this), info.args.data(), info.args.size(), GetUserData(info.cmdName.c_str()));
 
@@ -162,4 +166,29 @@ void ctkInstanceImpl::AppendManifest(const ctkManifest& manifest)
 	}
 
 	appendTo->entries.insert(appendTo->entries.end(), manifestToAppend->entries.begin(), manifestToAppend->entries.end());
+}
+
+void ctkInstanceImpl::RemoveManifest(const ctkManifest& manifest)
+{
+	ctkManifestImpl* manifestToRemove = reinterpret_cast<ctkManifestImpl*>(const_cast<ctkManifest*>(&manifest));
+	ctkManifestImpl* removeFrom = reinterpret_cast<ctkManifestImpl*>(this->manifest);
+
+	if (!manifestToRemove || !removeFrom)
+		return;
+
+	for (const ctkManifestImpl::ctkEntry& entry : manifestToRemove->entries)
+		RemoveCommand(entry.cmdName.c_str());
+}
+
+void ctkInstanceImpl::RemoveCommand(const char* cmdName)
+{
+	if (!cmdName)
+		return;
+
+	auto it = std::find_if(reinterpret_cast<ctkManifestImpl*>(manifest)->entries.begin(), reinterpret_cast<ctkManifestImpl*>(manifest)->entries.end(), [cmdName](const ctkManifestImpl::ctkEntry& entry)
+		{
+			return entry.cmdName == cmdName;
+		});
+	if (it != reinterpret_cast<ctkManifestImpl*>(manifest)->entries.end())
+		reinterpret_cast<ctkManifestImpl*>(manifest)->entries.erase(it);
 }

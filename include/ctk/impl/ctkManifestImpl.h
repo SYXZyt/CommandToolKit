@@ -6,7 +6,7 @@
 #include <ctk/ctkType.h>
 #include <stddef.h>
 #include <ctk/ctkDllApi.h>
-#include <ctk/Interpreter/ctkToken.h>
+#include <ctk/impl/Interpreter/ctkToken.h>
 #include <ctk/ctkResult.h>
 #include <ctk/impl/ctkString.h>
 #include <ctk/ctkManifest.h>

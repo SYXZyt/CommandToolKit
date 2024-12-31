@@ -30,10 +30,14 @@ public:
 
 	void SetUserData(const char* key, void* data);
 	void* GetUserData(const char* key);
+	void RemoveUserData(const char* key);
 
 	ctkResult RegisterCallback(const char* cmdName, ctkCallback callback);
 	ctkResult UnregisterCallback(const char* cmdName);
 
 	ctkResult ProcessCommand(const char* cmd);
+
 	void AppendManifest(const ctkManifest& manifest);
+	void RemoveManifest(const ctkManifest& manifest);
+	void RemoveCommand(const char* cmdName);
 };
