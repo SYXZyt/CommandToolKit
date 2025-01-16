@@ -3,6 +3,7 @@
 /********************************************/
 
 #pragma once
+#include <stdlib.h>
 
 struct ctkString final
 {
@@ -12,6 +13,9 @@ private:
 public:
 	inline const char* c_str() const { return data; }
 	inline size_t size() const;
+
+	bool operator==(const ctkString& other) const { return *this == other.c_str(); }
+	bool operator!=(const ctkString& other) const { return !(*this == other); }
 
 	bool operator==(const char* other) const;
 	bool operator!=(const char* other) const { return !(*this == other); }

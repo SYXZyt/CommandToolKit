@@ -16,6 +16,16 @@ void ctkAppendManifest(ctkInstance* instance, const ctkManifest* manifest)
 	reinterpret_cast<ctkInstanceImpl*>(instance)->AppendManifest(*manifest);
 }
 
+void ctkRemoveManifest(ctkInstance* instance, const ctkManifest* manifest)
+{
+	reinterpret_cast<ctkInstanceImpl*>(instance)->RemoveManifest(*manifest);
+}
+
+void ctkRemoveCommand(ctkInstance* instance, const char* cmdName)
+{
+	reinterpret_cast<ctkInstanceImpl*>(instance)->RemoveCommand(cmdName);
+}
+
 ctkResult ctkExecute(ctkInstance* instance, const char* cmd)
 {
 	return reinterpret_cast<ctkInstanceImpl*>(instance)->ProcessCommand(cmd);
@@ -44,4 +54,9 @@ void ctkSetUserData(ctkInstance* instance, const char* key, void* data)
 void* ctkGetUserData(ctkInstance* instance, const char* key)
 {
 	return reinterpret_cast<ctkInstanceImpl*>(instance)->GetUserData(key);
+}
+
+void ctkRemoveUserData(ctkInstance* instance, const char* key)
+{
+	reinterpret_cast<ctkInstanceImpl*>(instance)->RemoveUserData(key);
 }

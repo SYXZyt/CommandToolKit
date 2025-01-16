@@ -73,7 +73,7 @@ ctkResult ctkManifestImpl::Load(ctkToken* tokens, size_t tokenCount)
 
 ctkManifestImpl::ctkManifestImpl(const ctkManifest& other) : entries(reinterpret_cast<const ctkManifestImpl&>(other).entries) {}
 
-#include <ctk/Interpreter/ctkManifestTokeniser.h>
+#include <ctk/impl/Interpreter/ctkManifestTokeniser.h>
 ctkResult ctkManifestImpl::CreateManifestFromSource(const ctkString& source, ctkManifest* manifest)
 {
 	ctkManifestTokeniser tokeniser(source.c_str());

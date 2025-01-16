@@ -12,16 +12,16 @@ add_library(CTK SHARED
 	include/ctk/ctkDllApi.h
 	src/ctk/impl/ctkManifestImpl.cpp
 	src/ctk/ctkInstance.cpp
-	src/ctk/interpreter/ctkManifestTokeniser.cpp
+	src/ctk/impl/interpreter/ctkManifestTokeniser.cpp
 	src/ctk/impl/ctkInstanceImpl.cpp
 	src/ctk/impl/ctkString.cpp
 	src/ctk/ctkResult.cpp
 	src/ctk/ctkManifest.cpp
-	src/ctk/interpreter/ctkCmdTokeniser.cpp)
+	src/ctk/impl/interpreter/ctkCmdTokeniser.cpp)
 
 if (WIN32)
 	add_compile_definitions(CTK PRIVATE -D_CRT_SECURE_NO_WARNINGS)
 endif()
 
 target_include_directories(CTK PUBLIC include)
-add_compile_definitions(CTK PRIVATE -DCTK_EXPORT)
+target_compile_definitions(CTK PRIVATE -DCTK_EXPORT)

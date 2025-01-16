@@ -3,7 +3,7 @@
 /********************************************/
 
 #pragma once
-#include <ctk/Interpreter/ctkITokeniser.h>
+#include <ctk/impl/Interpreter/ctkITokeniser.h>
 
 class ctkManifestTokeniser final : public ctkITokeniser
 {

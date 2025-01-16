@@ -4,6 +4,7 @@
 #include <ctk/ctkResult.h>
 #include <ctk/ctkType.h>
 #include <ctk/ctkValue.h>
+#include <stdlib.h>
 
 CTK_BEGIN_C
 
@@ -29,6 +30,10 @@ extern CTK_API void ctkDestroyInstance(ctkInstance* instance);
 /// @param instance Which instance should have the commands added
 /// @param manifest The manifest of commands to add. The instance WILL NOT take ownership, rather copying the data to its own buffer. Make sure you delete the manifest after appending to the last instance
 extern CTK_API void ctkAppendManifest(ctkInstance* instance, const ctkManifest* manifest);
+
+extern CTK_API void ctkRemoveManifest(ctkInstance* instance, const ctkManifest* manifest);
+
+extern CTK_API void ctkRemoveCommand(ctkInstance* instance, const char* cmdName);
 
 /// @brief Execute a command on the instance
 /// @param instance Which instance should parse and run the callbacks
@@ -65,5 +70,7 @@ extern CTK_API void ctkSetUserData(ctkInstance* instance, const char* key, void*
 /// @param key The name of the callback to retrieve the data from
 /// @return A pointer to the data
 extern CTK_API void* ctkGetUserData(ctkInstance* instance, const char* key);
+
+extern CTK_API void ctkRemoveUserData(ctkInstance* instance, const char* key);
 
 CTK_END_C
