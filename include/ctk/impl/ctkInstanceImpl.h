@@ -8,10 +8,13 @@
 #include <unordered_map>
 #include <string>
 #include <ctk/ctkValue.h>
+#include <mutex>
 
 class ctkInstanceImpl final
 {
 private:
+	std::recursive_mutex mutex;
+
 	struct ParseInfo
 	{
 		std::string cmdName;
