@@ -5,6 +5,14 @@
 #include <ctk/ctkType.h>
 #include <ctk/ctkValue.h>
 #include <stdlib.h>
+#include <stdbool.h>
+
+#ifdef CTK_GUARD_MACROS
+#define ctkCreateInstance() ctkCreateInstanceGuarded(__FILE__, __LINE__)
+#else
+#define ctkCreateInstance ctkCreateInstance_real
+#endif
+
 
 CTK_BEGIN_C
 
@@ -20,7 +28,9 @@ typedef ctkResult(*ctkCallback)(ctkInstance* instance, ctkValue* parameters, siz
 
 /// @brief Create a new instance of the ctk library
 /// @return A pointer to the new instance
-extern CTK_API ctkInstance* ctkCreateInstance();
+extern CTK_API ctkInstance* ctkCreateInstance_real();
+
+extern CTK_API ctkInstance* ctkCreateInstanceGuarded(const char* file, int line);
 
 /// @brief Destroy an instance of the ctk library
 /// @param instance The instance which should be deleted
@@ -29,7 +39,7 @@ extern CTK_API void ctkDestroyInstance(ctkInstance* instance);
 /// @brief Add a new manifest of commands to the instance
 /// @param instance Which instance should have the commands added
 /// @param manifest The manifest of commands to add. The instance WILL NOT take ownership, rather copying the data to its own buffer. Make sure you delete the manifest after appending to the last instance
-extern CTK_API void ctkAppendManifest(ctkInstance* instance, const ctkManifest* manifest);
+extern CTK_API void ctkAppendManifest(ctkInstance* instance, ctkManifest* manifest, bool freeManifest);
 
 extern CTK_API void ctkRemoveManifest(ctkInstance* instance, const ctkManifest* manifest);
 

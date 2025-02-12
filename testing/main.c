@@ -1,3 +1,5 @@
+#define CTK_GUARD_MACROS
+
 #include <ctk/ctk.h>
 #include <stdio.h>
 
@@ -5,13 +7,13 @@
 #define nullptr NULL
 #endif
 
-static ctkResult OnHelp(ctkInstance* instance, ctkValue* parameters, size_t parameterCount, void* userdata)
+CTK_CALLBACK(OnHelp)
 {
 	printf("Help command\n");
 	return ctkMakeResult("I should be in the last message buffer", CTK_OK_MSG);
 }
 
-static ctkResult OnMoveTo(ctkInstance* instance, ctkValue* parameters, size_t parameterCount, void* userdata)
+CTK_CALLBACK(OnMoveTo)
 {
 	printf("MoveTo command\n");
 	printf("Name: %s\n", parameters[0].s);
@@ -21,7 +23,7 @@ static ctkResult OnMoveTo(ctkInstance* instance, ctkValue* parameters, size_t pa
 	return CTK_OK;
 }
 
-static ctkResult EchoWithUserdata(ctkInstance* instance, ctkValue* parameters, size_t parameterCount, void* userdata)
+CTK_CALLBACK(EchoWithUserdata)
 {
 	printf("Echo command\n");
 	printf("Userdata: %s\n", (const char*)userdata);
@@ -30,17 +32,20 @@ static ctkResult EchoWithUserdata(ctkInstance* instance, ctkValue* parameters, s
 
 void main()
 {
+	ctkBeginGuard();
+
 	ctkInstance* instance = ctkCreateInstance();
 
 	const char* manifestSrc = "help; moveto name: string, x: float, y: float;echo;";
 
 	ctkManifest* manifest;
 	ctkResult res = ctkCreateManifestFromSource(manifestSrc, &manifest);
+	ctkCreateManifestFromSource(manifestSrc, &manifest);
 
 	if (res != CTK_OK)
 		fprintf(stderr, "Error creating manifest: %s\n", ctkLastMessage());
 
-	ctkAppendManifest(instance, manifest);
+	ctkAppendManifest(instance, manifest, false);
 
 	ctkRegisterCallback(instance, "help", OnHelp);
 	ctkRegisterCallback(instance, "moveto", OnMoveTo);
@@ -54,8 +59,11 @@ void main()
 	if (res != CTK_OK)
 		fprintf(stderr, "Error executing command: %s\n", ctkLastMessage());
 
-	ctkDestroyManifest(manifest);
 	ctkUnregisterCallback(instance, "moveto");
 	ctkUnregisterCallback(instance, "help");
+
 	ctkDestroyInstance(instance);
+	ctkDestroyManifest(manifest);
+
+	ctkEndGuard();
 }

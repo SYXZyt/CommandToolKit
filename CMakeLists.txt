@@ -17,7 +17,10 @@ add_library(CTK SHARED
 	src/ctk/impl/ctkString.cpp
 	src/ctk/ctkResult.cpp
 	src/ctk/ctkManifest.cpp
-	src/ctk/impl/interpreter/ctkCmdTokeniser.cpp)
+	src/ctk/impl/interpreter/ctkCmdTokeniser.cpp
+	src/ctk/ctkGuard.cpp
+	src/ctk/impl/ctkGuardWatch.cpp
+	src/ctk/ctkIO.cpp)
 
 if (WIN32)
 	add_compile_definitions(CTK PRIVATE -D_CRT_SECURE_NO_WARNINGS)

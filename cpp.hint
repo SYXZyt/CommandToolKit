@@ -7,3 +7,4 @@
 #define CTK_API __declspec(dllexport)
 #define CTK_API __declspec(dllimport)
 #define CTK_API
+#define CTK_CALLBACK(name) static ctkResult name(ctkInstance* instance, ctkValue* parameters, size_t parameterCount, void* userdata)

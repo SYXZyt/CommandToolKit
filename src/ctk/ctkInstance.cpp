@@ -1,19 +1,50 @@
 #include <ctk/ctkInstance.h>
 #include <ctk/impl/ctkInstanceImpl.h>
+#include <ctk/ctkGuard.h>
+#include <ctk/impl/ctkGuardWatch.h>
 
-ctkInstance* ctkCreateInstance()
+static bool blockGuard = false;
+
+ctkInstance* ctkCreateInstance_real()
 {
-	return reinterpret_cast<ctkInstance*>(new ctkInstanceImpl());
+	ctkInstance* instance = reinterpret_cast<ctkInstance*>(new ctkInstanceImpl());
+
+	if (!blockGuard && ctkIsGuarding())
+	{
+		((ctkGuardWatch*)ctkGetGuardPtr())->AddInstance(instance, { nullptr, 0 });
+	}
+
+	return instance;
+}
+
+ctkInstance* ctkCreateInstanceGuarded(const char* file, int line)
+{
+	blockGuard = true;
+	ctkInstance* instance = ctkCreateInstance_real();
+	blockGuard = false;
+
+	if (ctkIsGuarding())
+	{
+		ctkGuardMetadata metadata = { file, line };
+		((ctkGuardWatch*)ctkGetGuardPtr())->AddInstance(instance, metadata);
+	}
+	
+	return instance;
 }
 
 void ctkDestroyInstance(ctkInstance* instance)
 {
+	((ctkGuardWatch*)ctkGetGuardPtr())->RemoveInstance(instance);
+
 	delete reinterpret_cast<ctkInstanceImpl*>(instance);
 }
 
-void ctkAppendManifest(ctkInstance* instance, const ctkManifest* manifest)
+void ctkAppendManifest(ctkInstance* instance, ctkManifest* manifest, bool freeManifest)
 {
 	reinterpret_cast<ctkInstanceImpl*>(instance)->AppendManifest(*manifest);
+
+	if (freeManifest)
+		ctkDestroyManifest(manifest);
 }
 
 void ctkRemoveManifest(ctkInstance* instance, const ctkManifest* manifest)
