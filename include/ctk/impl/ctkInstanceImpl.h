@@ -32,7 +32,7 @@ protected:
 public:
 	inline ctkManifest* GetManifest() { return manifest; }
 
-	void SetUserData(const char* key, void* data);
+	ctkResult SetUserData(const char* key, void* data);
 	void* GetUserData(const char* key);
 	void RemoveUserData(const char* key);
 

@@ -48,6 +48,7 @@ extern CTK_API const char* ctkLastMessage();
 
 /// @brief Set your own message into the buffer. Only for internal use. Use `ctkMakeResult` for external use
 extern void ctkSetLastMessage(struct ctkString* msg);
+
 extern CTK_API ctkResult ctkMakeResult(const char* msg, ctkResult type);
 
 CTK_END_C

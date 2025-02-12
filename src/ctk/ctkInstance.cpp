@@ -77,9 +77,9 @@ ctkResult ctkUnregisterCallback(ctkInstance* instance, const char* cmdName)
 	return reinterpret_cast<ctkInstanceImpl*>(instance)->UnregisterCallback(cmdName);
 }
 
-void ctkSetUserData(ctkInstance* instance, const char* key, void* data)
+ctkResult ctkSetUserData(ctkInstance* instance, const char* key, void* data)
 {
-	reinterpret_cast<ctkInstanceImpl*>(instance)->SetUserData(key, data);
+	return reinterpret_cast<ctkInstanceImpl*>(instance)->SetUserData(key, data);
 }
 
 void* ctkGetUserData(ctkInstance* instance, const char* key)

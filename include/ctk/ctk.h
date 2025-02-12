@@ -8,4 +8,4 @@
 #include <ctk/ctkIO.h>
 #include <ctk/ctkDllApi.h>
 
-#define CTK_CALLBACK(name) static ctkResult name(ctkInstance* instance, ctkValue* parameters, size_t parameterCount, void* userdata)
+#define CTK_CALLBACK(name) static ctkResult name(ctkInstance* name ## _instance, ctkValue* name ## _parameters, size_t name ## _parameterCount, void* name ## _userdata)

@@ -9,6 +9,7 @@ struct ctkString final
 {
 private:
 	char* data;
+	size_t length;
 
 public:
 	inline const char* c_str() const { return data; }
@@ -22,6 +23,8 @@ public:
 
 	ctkString& operator=(const ctkString& other);
 	ctkString& operator=(ctkString&& other) noexcept;
+
+	ctkString& operator+=(const ctkString& other);
 
 	ctkString();
 	ctkString(const char* str);

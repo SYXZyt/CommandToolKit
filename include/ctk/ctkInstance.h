@@ -13,7 +13,6 @@
 #define ctkCreateInstance ctkCreateInstance_real
 #endif
 
-
 CTK_BEGIN_C
 
 /// @brief Instance of the ctk library. Use it to create, execute and destroy commands
@@ -73,7 +72,7 @@ extern CTK_API ctkResult ctkUnregisterCallback(ctkInstance* instance, const char
 /// @param instance Which instance the callback is associated with
 /// @param key The name of the callback to associate the data with
 /// @param data The data to send to the callback
-extern CTK_API void ctkSetUserData(ctkInstance* instance, const char* key, void* data);
+extern CTK_API ctkResult ctkSetUserData(ctkInstance* instance, const char* key, void* data);
 
 /// @brief Retrieve the data which has been assigned to a callback
 /// @param instance Which instance the callback is associated with

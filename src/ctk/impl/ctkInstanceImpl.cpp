@@ -4,6 +4,18 @@
 #include <ctk/impl/Interpreter/ctkCmdTokeniser.h>
 #include <algorithm>
 
+enum class FailReason
+{
+	OK,
+	NO_NAME_FOUND,
+
+	//The callback exists, but the provided arguments do not match with the manifest
+	INVALID_ARGS_COUNT, //The provided count doesn't match
+
+	INVALID_ARG_EXPECTED_STRING, //The manifest expected a string, but the user provided a float
+	INVALID_ARG_EXPECTED_FLOAT //The manifest expected a float, but the user provided a string
+};
+
 ctkCallback ctkInstanceImpl::GetMatchingCallback(const ParseInfo& info)
 {
 	mutex.lock();
@@ -16,26 +28,69 @@ ctkCallback ctkInstanceImpl::GetMatchingCallback(const ParseInfo& info)
 
 	ctkCallback callback = callbacks[info.cmdName];
 
+	FailReason failureReason = FailReason::OK;
 	ctkManifestImpl* manifestImpl = reinterpret_cast<ctkManifestImpl*>(manifest);
-	auto it = std::find_if(manifestImpl->entries.begin(), manifestImpl->entries.end(), [&info](const ctkManifestImpl::ctkEntry& entry)
+	auto it = manifestImpl->entries.begin();
+
+	while (it != manifestImpl->entries.end())
+	{
+		auto& entry = *it;
+
+		if (entry.cmdName == info.cmdName.c_str())
 		{
-			if (entry.cmdName != info.cmdName.c_str())
-				return false;
 			if (entry.args.size() != info.args.size())
-				return false;
+			{
+				failureReason = FailReason::INVALID_ARGS_COUNT;
+				break;
+			}
 			for (size_t i = 0; i < entry.args.size(); i++)
 			{
 				if (entry.args[i].argType == ctkType::CTK_TYPE_FLOAT && info.args[i].type != ctkType::CTK_TYPE_FLOAT)
-					return false;
+				{
+					failureReason = FailReason::INVALID_ARG_EXPECTED_FLOAT;
+					break;
+				}
 				if (entry.args[i].argType == ctkType::CTK_TYPE_STRING && info.args[i].type != ctkType::CTK_TYPE_STRING)
-					return false;
+				{
+					failureReason = FailReason::INVALID_ARG_EXPECTED_STRING;
+					break;
+				}
 			}
 
-			return true;
-		});
+			//If we check some previously incorrect callbacks, we gotta update this back to not report an error
+			//Other it will spit some wrong shit out into the output buffer
+			if (failureReason == FailReason::NO_NAME_FOUND)
+				failureReason = FailReason::OK;
 
-	if (it == manifestImpl->entries.end())
+			break;
+		}
+
+		failureReason = FailReason::NO_NAME_FOUND;
+		++it;
+	}
+
+	if (failureReason != FailReason::OK)
 	{
+		ctkString msg = "Could not execute command: ";
+
+		switch (failureReason)
+		{
+			case FailReason::NO_NAME_FOUND:
+				msg += "No callback with name has been registered";
+				break;
+			case FailReason::INVALID_ARGS_COUNT:
+				msg += "Invalid number of arguments";
+				break;
+			case FailReason::INVALID_ARG_EXPECTED_FLOAT:
+				msg += "Invalid argument type. Expected float, got string";
+				break;
+			case FailReason::INVALID_ARG_EXPECTED_STRING:
+				msg += "Invalid argument type. Expected string, got float";
+				break;
+		}
+
+		ctkSetLastMessage(&msg);
+
 		mutex.unlock();
 		return nullptr;
 	}
@@ -44,11 +99,18 @@ ctkCallback ctkInstanceImpl::GetMatchingCallback(const ParseInfo& info)
 	return callback;
 }
 
-void ctkInstanceImpl::SetUserData(const char* key, void* data)
+ctkResult ctkInstanceImpl::SetUserData(const char* key, void* data)
 {
+	if (!callbacks.count(key))
+	{
+		return ctkMakeResult("No callback with name found", ctkResult::CTK_CALLBACK_NOT_FOUND);
+	}
+
 	mutex.lock();
 	userdata[key] = data;
 	mutex.unlock();
+
+	return ctkResult::CTK_OK;
 }
 
 void* ctkInstanceImpl::GetUserData(const char* key)
@@ -118,7 +180,7 @@ ctkResult ctkInstanceImpl::ProcessCommand(const char* cmd)
 	ctkCmdTokeniser tokeniser(cmd);
 
 	std::vector<ctkToken> tokens = std::move(tokeniser.Tokenise());
-	
+
 	auto it = std::find_if(tokens.begin(), tokens.end(), [](const ctkToken& token)
 		{
 			return token.type == ctkTokenType::TOKENISE_ERROR;
@@ -141,7 +203,7 @@ ctkResult ctkInstanceImpl::ProcessCommand(const char* cmd)
 		mutex.unlock();
 		return ctkResult::CTK_OK;
 	}
-	
+
 	//Now that we know we actually have a command, we can start parsing it
 	if (tokens[0].type != ctkTokenType::IDENTIFIER)
 	{
@@ -157,12 +219,12 @@ ctkResult ctkInstanceImpl::ProcessCommand(const char* cmd)
 		if (current->type != ctkTokenType::STRING_LIT && current->type != ctkTokenType::FLOAT_LIT)
 		{
 			mutex.unlock();
-			return ctkMakeResult("Invalid parameter", ctkResult::CTK_TOKENISE_CMD_ERROR);
+			return ctkMakeResult("Invalid parameter. Expected string or float", ctkResult::CTK_TOKENISE_CMD_ERROR);
 		}
 
 		ctkValue value{};
 		value.type = current->type == ctkTokenType::STRING_LIT ? ctkType::CTK_TYPE_STRING : ctkType::CTK_TYPE_FLOAT; //Thanks C for the stupidly long names
-		
+
 		switch (value.type)
 		{
 			case ctkType::CTK_TYPE_STRING:
@@ -185,7 +247,10 @@ ctkResult ctkInstanceImpl::ProcessCommand(const char* cmd)
 	if (!callback)
 	{
 		mutex.unlock();
-		return ctkMakeResult("No matching command found, or no callback found", ctkResult::CTK_NO_MATHCHING_CALLBACK);
+
+		//GetMatchingCallback already sent a message into the output buffer so we don't need to do it again
+		//since at this point we don't have any info about the error, so we could only send a generic failure message
+		return ctkResult::CTK_NO_MATHCHING_CALLBACK;
 	}
 
 	ctkResult res = callback(reinterpret_cast<ctkInstance*>(this), info.args.data(), info.args.size(), GetUserData(info.cmdName.c_str()));

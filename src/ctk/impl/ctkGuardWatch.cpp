@@ -1,20 +1,27 @@
 #include <ctk/impl/ctkGuardWatch.h>
+#include <ctk/ctkIO.h>
+#include <string>
+#include <sstream>
 
 void ctkGuardWatch::Report()
 {
+	std::stringstream reportStream;
+
 	for (ctkGuardWatch::Instance& instance : instances)
 	{
-		fprintf(stderr, "\n[CTK_GUARD_ERROR] Instance not destroyed: %p\n", instance.instance);
+		reportStream << "\n[CTK_GUARD_ERROR] Instance not destroyed: " << instance.instance << "\n";
 		if (instance.metadata.file)
-			fprintf(stderr, "Created at file: %s at line: %d\n\n", instance.metadata.file, instance.metadata.line);
+			reportStream << "Created at file: " << instance.metadata.file << " at line: " << instance.metadata.line << "\n\n";
 	}
 
 	for (ctkGuardWatch::Manifest& manifest : manifests)
 	{
-		fprintf(stderr, "\n[CTK_GUARD_ERROR] Manifest not destroyed: %p\n", manifest.manifest);
+		reportStream << "\n[CTK_GUARD_ERROR] Manifest not destroyed: " << manifest.manifest << "\n";
 		if (manifest.metadata.file)
-			fprintf(stderr, "Created at file: %s at line: %d\n\n", manifest.metadata.file, manifest.metadata.line);
+			reportStream << "Created at file: " << manifest.metadata.file << " at line: " << manifest.metadata.line << "\n\n";
 	}
+
+	ctkOutput(reportStream.str().c_str());
 }
 
 void ctkGuardWatch::Clear()

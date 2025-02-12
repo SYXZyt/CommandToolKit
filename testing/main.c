@@ -7,6 +7,9 @@
 #define nullptr NULL
 #endif
 
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
 CTK_CALLBACK(OnHelp)
 {
 	printf("Help command\n");
@@ -16,9 +19,9 @@ CTK_CALLBACK(OnHelp)
 CTK_CALLBACK(OnMoveTo)
 {
 	printf("MoveTo command\n");
-	printf("Name: %s\n", parameters[0].s);
-	printf("X: %f\n", parameters[1].f);
-	printf("Y: %f\n", parameters[2].f);
+	printf("Name: %s\n", OnMoveTo_parameters[0].s);
+	printf("X: %f\n", OnMoveTo_parameters[1].f);
+	printf("Y: %f\n", OnMoveTo_parameters[2].f);
 
 	return CTK_OK;
 }
@@ -26,7 +29,7 @@ CTK_CALLBACK(OnMoveTo)
 CTK_CALLBACK(EchoWithUserdata)
 {
 	printf("Echo command\n");
-	printf("Userdata: %s\n", (const char*)userdata);
+	printf("Userdata: %s\n", (const char*)EchoWithUserdata_userdata);
 	return CTK_OK;
 }
 
@@ -40,7 +43,6 @@ void main()
 
 	ctkManifest* manifest;
 	ctkResult res = ctkCreateManifestFromSource(manifestSrc, &manifest);
-	ctkCreateManifestFromSource(manifestSrc, &manifest);
 
 	if (res != CTK_OK)
 		fprintf(stderr, "Error creating manifest: %s\n", ctkLastMessage());
@@ -53,8 +55,8 @@ void main()
 
 	ctkSetUserData(instance, "echo", "Hello, world!");
 
-	ctkExecute(instance, "help");
-	printf("%s\n\n", ctkLastMessage());
+	ctkExecute(instance, "moveto 'hi' 'bruh' 0 ");
+	printf("CTK Message Buffer: %s\n\n", ctkLastMessage());
 	res = ctkExecute(instance, "echo");
 	if (res != CTK_OK)
 		fprintf(stderr, "Error executing command: %s\n", ctkLastMessage());
