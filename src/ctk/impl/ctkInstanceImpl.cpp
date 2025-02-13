@@ -22,7 +22,10 @@ ctkCallback ctkInstanceImpl::GetMatchingCallback(const ParseInfo& info)
 
 	if (!callbacks.count(info.cmdName))
 	{
+		ctkString msg = "Could not execute command: ""No callback with name has been registered";
+		ctkSetLastMessage(&msg);
 		mutex.unlock();
+
 		return nullptr;
 	}
 
@@ -201,7 +204,7 @@ ctkResult ctkInstanceImpl::ProcessCommand(const char* cmd)
 	if (tokens.size() == 1)
 	{
 		mutex.unlock();
-		return ctkResult::CTK_OK;
+		return ctkMakeResult("", ctkResult::CTK_OK);
 	}
 
 	//Now that we know we actually have a command, we can start parsing it
