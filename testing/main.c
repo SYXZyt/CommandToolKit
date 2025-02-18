@@ -7,9 +7,6 @@
 #define nullptr NULL
 #endif
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-
 CTK_CALLBACK(OnHelp)
 {
 	printf("Help command\n");
