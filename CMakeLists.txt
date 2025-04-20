@@ -28,3 +28,7 @@ endif()
 
 target_include_directories(CTK PUBLIC include)
 target_compile_definitions(CTK PRIVATE -DCTK_EXPORT)
+
+set_target_properties(CTK PROPERTIES
+	DEBUG_POSTFIX "-d"
+)

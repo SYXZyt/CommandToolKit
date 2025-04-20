@@ -80,6 +80,11 @@ void ctk::ResetOutputCallback()
 	ctkResetOutputCallback();
 }
 
+void ctk::Output(const std::string& msg)
+{
+	ctkOutput(msg.c_str());
+}
+
 ctkOutputCallback ctk::GetOutputCallback()
 {
 	return ctkGetOutputCallback();
@@ -88,4 +93,16 @@ ctkOutputCallback ctk::GetOutputCallback()
 ctkOutputCallback ctk::GetDefaultOutputCallback()
 {
 	return ctkGetDefaultOutputCallback();
+}
+
+#include <ctk/impl/ctkString.h>
+void ctk::SetLastMessage(const std::string& msg)
+{
+	ctkString msgStr = ctkString(msg.c_str());
+	ctkSetLastMessage(&msgStr);
+}
+
+ctkResult ctk::MakeResult(const std::string& msg, ctkResult type)
+{
+	return ctkMakeResult(msg.c_str(), type);
 }
