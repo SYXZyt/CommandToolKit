@@ -71,4 +71,8 @@ namespace ctk
 
 	extern ctkOutputCallback CTK_API GetOutputCallback();
 	extern ctkOutputCallback CTK_API GetDefaultOutputCallback();
+
+	extern void CTK_API SetLastMessage(const std::string& msg);
+	extern const char* CTK_API LastMessage();
+	extern ctkResult CTK_API MakeResult(const std::string& msg, ctkResult type);
 }
